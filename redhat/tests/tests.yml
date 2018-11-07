@@ -1,0 +1,31 @@
+- name: Run the tests
+  hosts: all
+  tasks:
+  - name: check if we are running in a container
+    stat:
+      path: /.dockerenv
+    register: in_docker_cont
+  - name: set fact required_services
+    set_fact:
+      required_services: []
+  - name: add docker to req_serv if we are not in a dkr cont
+    set_fact:
+      required_services: ["docker"]
+    when: not in_docker_cont.stat.exists
+  - name: run them tests
+    import_role:
+      name: standard-test-basic
+    tags:
+    - classic
+    vars:
+      tests:
+      - unit:
+          run: pytest-3 -v /usr/libexec/installed-tests/python-docker/tests/unit/
+      - integration:
+          run: pytest-3 -v /usr/libexec/installed-tests/python-docker/tests/integration/
+      required_packages:
+      - python-docker-tests
+      - python3-pytest
+      - python3-docker
+      - docker
+      required_services: '{{ required_services }}'
