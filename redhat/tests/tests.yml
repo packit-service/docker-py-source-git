@@ -1,0 +1,33 @@
+- name: Run the tests
+  vars:
+    req_services: []  # don't name this required_services, it would be endless loop
+    req_pkgs:
+    - python-docker-tests
+    - python3-mock
+    - python3-pytest
+    - python3-docker
+  hosts: all
+  pre_tasks:
+  - name: check if we are running in a container
+    command: systemctl
+    register: in_host
+    ignore_errors: true
+  - name: add docker to req_services if we are not in a container
+    set_fact:
+      req_services: ["docker"]
+    when: in_host.rc == 0
+  - name: add docker to req_pkgs if we are not in a container
+    set_fact:
+      req_pkgs: '{{ req_pkgs }} + [ "docker" ]'
+    when: in_host.rc == 0
+  roles:
+  - role: standard-test-basic
+    tags:
+    - classic
+    tests:
+    - unit:
+        run: pytest-3 -v /usr/libexec/installed-tests/python-docker/tests/unit/
+    - integration:
+        run: pytest-3 -v /usr/libexec/installed-tests/python-docker/tests/integration/
+    required_packages: '{{ req_pkgs }}'
+    required_services: '{{ req_services }}'
