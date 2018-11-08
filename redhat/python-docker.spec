@@ -28,7 +28,7 @@ Source0:        https://files.pythonhosted.org/packages/source/d/%{srcname}/%{sr
 # Environment markers were first added in setuptools 20.6.8, so that doesn't
 # work in RHEL.  This patch converts those environment markers into simple if
 # statements.
-Patch1: remove-environment-markers.patch
+# Patch1: remove-environment-markers.patch
 
 BuildArch:      noarch
 
@@ -138,7 +138,7 @@ run containers, manage containers, manage Swarms, etc.
 %endif # with_python3
 
 %prep
-%autosetup -n %{srcname}-%{version} -p 1
+%autosetup -n %{srcname}-%{version}
 rm -fr docker.egg-info
 
 %build
