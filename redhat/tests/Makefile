@@ -1,4 +1,4 @@
 .PHONY: check
 
 check:
-	ansible-playbook -i inventory -c local ./tests.yml
+	ansible-playbook -i inventory-localhost -c local ./tests.yml
