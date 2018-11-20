@@ -7,10 +7,15 @@
 %bcond_with tests
 %endif
 
+%if 0%{?rhel} > 7
 # Disable python2 build by default
 %bcond_with python2
+%else
+%bcond_without python2
+%endif
 
 %global srcname docker
+%global num_patches %{lua: c=0; for i,p in ipairs(patches) do c=c+1; end; print(c);}
 
 Name:           python-%{srcname}
 Version:        4.0.0
@@ -19,9 +24,6 @@ Summary:        A Python library for the Docker Engine API
 License:        ASL 2.0
 URL:            https://pypi.python.org/pypi/%{srcname}
 Source0:        https://files.pythonhosted.org/packages/source/d/%{srcname}/%{srcname}-%{version}.tar.gz
-
-
-%global num_patches %{lua: c=0; for i,p in ipairs(patches) do c=c+1; end; print(c);}
 
 BuildArch:      noarch
 
@@ -36,6 +38,16 @@ Summary:        A Python library for the Docker Engine API
 
 BuildRequires:  python2-devel
 BuildRequires:  python%{?fedora:2}-setuptools
+%if %{with tests}
+BuildRequires:  python2-mock >= 1.0.1
+BuildRequires:  %{?fedora:python2-}pytest >= 2.9.1
+BuildRequires:  python%{?fedora:2}-requests >= 2.14.2
+BuildRequires:  python%{?fedora:2}-six >= 1.4.0
+BuildRequires:  python%{?fedora:2}-websocket-client >= 0.32.0
+BuildRequires:  python%{?fedora:2}-docker-pycreds >= 0.2.1
+BuildRequires:  python%{?fedora:2}-backports-ssl_match_hostname >= 3.5
+BuildRequires:  python%{?fedora:2}-ipaddress >= 1.0.16
+%endif  # tests
 Requires:       python%{?fedora:2}-requests >= 2.14.2
 Requires:       python%{?fedora:2}-six >= 1.4.0
 Requires:       python%{?fedora:2}-websocket-client >= 0.32.0
@@ -46,22 +58,45 @@ Requires:       python%{?fedora:2}-pyOpenSSL
 Requires:       python%{?fedora:2}-idna
 Requires:       python%{?fedora:2}-cryptography
 
+%if 0%{?fedora} >= 26
 Obsoletes:      python-docker-py < 1:2
+%else
+Obsoletes:      python-docker-py < 2
+%endif
 
 %description -n python2-%{srcname}
 It lets you do anything the docker command does, but from within Python apps –
 run containers, manage containers, manage Swarms, etc.
 %endif # with python2
 
+%if %{with python2}
 %if %{with tests}
-%package -n python-%{srcname}-tests
+%package -n python2-%{srcname}-tests
 Summary:        Unit tests and integration tests for python-docker
 
-%{?python_provide:%python_provide python-%{srcname}-tests}
+%{?python_provide:%python_provide python2-%{srcname}-tests}
 
-%description -n python-%{srcname}-tests
+Requires:       python2-%{srcname}
+Requires:       python2-mock >= 1.0.1
+Requires:       %{?fedora:python2-}pytest >= 2.9.1
+Requires:       python%{?fedora:2}-requests >= 2.14.2
+Requires:       python%{?fedora:2}-six >= 1.4.0
+Requires:       python%{?fedora:2}-websocket-client >= 0.32.0
+Requires:       python%{?fedora:2}-docker-pycreds >= 0.2.1
+Requires:       python%{?fedora:2}-backports-ssl_match_hostname >= 3.5
+Requires:       python%{?fedora:2}-ipaddress >= 1.0.16
+Requires:       python%{?fedora:2}-pyOpenSSL
+Requires:       python%{?fedora:2}-idna
+Requires:       python%{?fedora:2}-cryptography
+
+# Remove at Fedora 31
+Provides:       python-%{srcname}-tests = %{version}-%{release}
+Obsoletes:      python-%{srcname}-tests < %{version}-%{release}
+
+%description -n python2-%{srcname}-tests
 Upstream test-suite (unit, integration) packaged as RPM.
 %endif # tests
+%endif # with python2
 
 %if %{with python3}
 %package -n python3-%{srcname}
@@ -70,6 +105,14 @@ Summary:        A Python library for the Docker Engine API
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
+%if %{with tests}
+BuildRequires:  python3-mock >= 1.0.1
+BuildRequires:  python3-pytest >= 2.9.1
+BuildRequires:  python3-requests >= 2.14.2
+BuildRequires:  python3-six >= 1.4.0
+BuildRequires:  python3-websocket-client >= 0.32.0
+BuildRequires:  python3-docker-pycreds >= 0.2.1
+%endif  # tests
 Requires:       python3-requests >= 2.14.2
 Requires:       python3-six >= 1.4.0
 Requires:       python3-websocket-client >= 0.32.0
@@ -90,14 +133,17 @@ run containers, manage containers, manage Swarms, etc.
 %endif # with_python3
 
 %prep
+
 %setup -n %{srcname}-%{version}
 rm -fr docker.egg-info
+
 %if %{num_patches}
 git init
-git config user.email "noreply@example.com"
-git config user.name "John Foo"
+git config user.email "user-cont-team@redhat.com"
+git config user.name "user-cont team"
 git add .
 git commit -a -q -m "%{version} baseline."
+
 # Apply all the patches.
 git am %{patches}
 %endif
@@ -120,12 +166,26 @@ git am %{patches}
 %py3_install
 %endif # with_python3
 
+%if %{with python2}
 %if %{with tests}
 # copy tests to /usr/libexec/installed-tests
 mkdir -p %{buildroot}%{_libexecdir}/installed-tests/%{name}
 cp -avr tests/ %{buildroot}%{_libexecdir}/installed-tests/%{name}/
 %endif # tests
+%endif # with python2
 
+%check
+%if %{with python2}
+%if %{with tests}
+%{__python2} -m pytest -v tests/unit/
+%endif # tests
+%endif # with python2
+
+%if %{with python3}
+%if %{with tests}
+%{__python3} -m pytest -v tests/unit/
+%endif # tests
+%endif # with_python3
 
 %if %{with python2}
 %files -n python2-%{srcname}
@@ -141,10 +201,12 @@ cp -avr tests/ %{buildroot}%{_libexecdir}/installed-tests/%{name}/
 %{python3_sitelib}/*
 %endif # with_python3
 
+%if %{with python2}
 %if %{with tests}
-%files -n python-%{srcname}-tests
+%files -n python2-%{srcname}-tests
 %{_libexecdir}/installed-tests
 %endif # tests
+%endif # with python2
 
 %changelog
 * Fri May 24 2019 Frantisek Lachman <flachman@redhat.com> - 4.0.0-1
