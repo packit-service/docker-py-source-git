@@ -136,7 +136,7 @@ run containers, manage containers, manage Swarms, etc.
 %setup -n %{srcname}-%{version}
 rm -fr docker.egg-info
 
-%if %{num_patches}
+%if 0%{?patches}
 git init
 git config user.email "user-cont-team@redhat.com"
 git config user.name "user-cont team"
