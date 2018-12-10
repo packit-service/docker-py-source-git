@@ -1,3 +1,5 @@
+# a new comment
+
 %if 0%{?fedora} || 0%{?rhel} > 7
 # Enable python3 build by default
 %bcond_without python3
