@@ -77,11 +77,7 @@ Requires:       python3-pyOpenSSL
 Requires:       python3-idna
 Requires:       python3-cryptography
 
-%if 0%{?fedora} >= 26
 Obsoletes:      python3-docker-py < 1:2
-%else
-Obsoletes:      python3-docker-py < 2
-%endif
 
 %description -n python3-%{srcname}
 It lets you do anything the docker command does, but from within Python apps –
