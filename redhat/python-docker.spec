@@ -1,3 +1,5 @@
+# test
+
 %if 0%{?fedora} || 0%{?rhel} > 7
 # Enable python3 build by default
 %bcond_without python3
@@ -19,12 +21,6 @@ Summary:        A Python library for the Docker Engine API
 License:        ASL 2.0
 URL:            https://pypi.python.org/pypi/%{srcname}
 Source0:        https://files.pythonhosted.org/packages/source/d/%{srcname}/%{srcname}-%{version}.tar.gz
-
-# Upstream uses environment markers to conditionally apply some dependencies.
-# Environment markers were first added in setuptools 20.6.8, so that doesn't
-# work in RHEL.  This patch converts those environment markers into simple if
-# statements.
-Patch1: remove-environment-markers.patch
 
 %global num_patches %{lua: c=0; for i,p in ipairs(patches) do c=c+1; end; print(c);}
 
@@ -83,11 +79,7 @@ Requires:       python3-pyOpenSSL
 Requires:       python3-idna
 Requires:       python3-cryptography
 
-%if 0%{?fedora} >= 26
 Obsoletes:      python3-docker-py < 1:2
-%else
-Obsoletes:      python3-docker-py < 2
-%endif
 
 %description -n python3-%{srcname}
 It lets you do anything the docker command does, but from within Python apps –
