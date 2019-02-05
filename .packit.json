@@ -1,0 +1,32 @@
+{
+  "specfile_path": "redhat/python-docker.spec",
+  "synced_files": [
+    "redhat",
+    ".packit.json"
+  ],
+  "jobs": [
+    {
+      "trigger": "release",
+      "release_to": [
+        "master"
+      ]
+    },
+    {
+      "trigger": "pull_request",
+      "release_to": [
+        "master"
+      ]
+    }
+  ],
+  "upstream_name": "docker",
+  "package_name": "python-docker",
+  "dist_git_url": "https://src.fedoraproject.org/rpms/python-docker.git",
+  "checks": [
+    {
+      "name": "simple-koji-ci"
+    },
+    {
+      "name": "Fedora CI"
+    }
+  ]
+}
