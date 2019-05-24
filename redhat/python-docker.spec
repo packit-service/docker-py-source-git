@@ -20,11 +20,6 @@ License:        ASL 2.0
 URL:            https://pypi.python.org/pypi/%{srcname}
 Source0:        https://files.pythonhosted.org/packages/source/d/%{srcname}/%{srcname}-%{version}.tar.gz
 
-# Upstream uses environment markers to conditionally apply some dependencies.
-# Environment markers were first added in setuptools 20.6.8, so that doesn't
-# work in RHEL.  This patch converts those environment markers into simple if
-# statements.
-Patch1: remove-environment-markers.patch
 
 %global num_patches %{lua: c=0; for i,p in ipairs(patches) do c=c+1; end; print(c);}
 
