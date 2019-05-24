@@ -1,0 +1,17 @@
+---
+specfile_path: redhat/python-docker.spec
+synced_files:
+  - redhat/
+  - .packit.yaml
+downstream_package_name: python-docker
+
+jobs:
+- job: sync_from_downstream
+  trigger: commit
+- job: copr_build
+  trigger: pull_request
+  metadata:
+    targets:
+    - fedora-rawhide-x86_64
+    - fedora-30-x86_64
+upstream_ref: 0.4.0
