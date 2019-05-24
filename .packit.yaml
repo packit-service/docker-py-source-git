@@ -1,0 +1,24 @@
+---
+specfile_path: redhat/python-docker.spec
+synced_files:
+  - src: redhat/python-docker.spec
+    dest: python-docker.spec
+  - src: redhat/tests
+    dest: tests
+  - .packit.yaml
+downstream_package_name: python-docker
+upstream_project_name: docker
+upstream_ref: 4.0.0
+
+create_tarball_command: ["python3", "setup.py", "sdist", "--dist-dir", "."]
+current_version_command: ["python3", "setup.py", "--version"]
+
+jobs:
+- job: sync_from_downstream
+  trigger: commit
+- job: copr_build
+  trigger: pull_request
+  metadata:
+    targets:
+    - fedora-rawhide-x86_64
+    - fedora-30-x86_64
