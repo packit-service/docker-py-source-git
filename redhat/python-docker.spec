@@ -26,6 +26,8 @@ Source0:        https://files.pythonhosted.org/packages/source/d/%{srcname}/%{sr
 BuildRequires:  git-core
 BuildArch:      noarch
 
+# some comment
+
 %description
 It lets you do anything the docker command does, but from within Python apps –
 run containers, manage containers, manage Swarms, etc.
