@@ -1,0 +1,13 @@
+---
+- name: Ansible recipe for a container image where the tests will run
+  hosts: all
+  tasks:
+  - dnf:
+      name:
+      - standard-test-roles
+      - make
+      state: installed
+  - file:
+      src: /usr/bin/python3
+      dest: /usr/bin/python
+      state: link
