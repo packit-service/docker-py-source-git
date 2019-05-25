@@ -1,0 +1,17 @@
+# This playbook is meant to be running in a container, not in CI
+- name: Run the tests
+  hosts: all
+  roles:
+  - role: standard-test-basic
+    tags:
+    - classic
+    tests:
+    - unit:
+        run: pytest-3 -v /usr/libexec/installed-tests/python-docker/tests/unit/
+    - integration:
+        run: ./runtest.sh
+    required_packages:
+    - python-docker-tests
+    - python3-mock
+    - python3-pytest
+    - python3-docker
