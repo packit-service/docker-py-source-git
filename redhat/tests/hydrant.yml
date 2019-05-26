@@ -1,3 +1,4 @@
+# This playbook is meant to be running in a container, not in CI
 - name: Run the tests
   hosts: all
   roles:
@@ -14,6 +15,3 @@
     - python3-mock
     - python3-pytest
     - python3-docker
-    - docker
-    required_services:
-    - docker
