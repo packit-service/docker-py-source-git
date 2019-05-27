@@ -7,19 +7,18 @@ BASE_IMAGE := registry.fedoraproject.org/fedora:29
 check:
 	ansible-playbook -i inventory-localhost -v -e artifacts=$(CURDIR) -c local ./tests.yml
 
-build:
-	sudo podman run \
-		--name $(WORKING_CONT) \
-		$(BASE_IMAGE) \
-		dnf install -y standard-test-roles make
-	sudo podman commit $(WORKING_CONT) $(TESTS_IMAGE)
-	sudo podman rm $(WORKING_CONT)
+check-local:
+	ansible-playbook -i inventory-localhost -v -e artifacts=$(CURDIR) -c local ./hydrant.yml
+
+build: recipe.yml
+	ansible-bender --debug build ./recipe.yml $(BASE_IMAGE) $(TESTS_IMAGE)
 
 check-in-container:
-	sudo podman run --rm \
+	podman run --rm -ti \
 		-v $(CURDIR):/src \
 		--net host \
+		-e ANSIBLE_PYTHON_INTERPRETER=/usr/bin/python3 \
 		-w /src \
 		-v /var/run/docker.sock:/var/run/docker.sock \
 		$(TESTS_IMAGE) \
-		make check
+		make check-local
