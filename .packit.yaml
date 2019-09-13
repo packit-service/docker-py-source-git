@@ -8,7 +8,7 @@ synced_files:
   - .packit.yaml
 downstream_package_name: python-docker
 upstream_project_name: docker
-upstream_ref: 4.0.1
+upstream_ref: "1308cfb78dc2386e1ade3d3a22201431d012604e"  # 4.0.2
 
 create_tarball_command: ["python3", "setup.py", "sdist", "--dist-dir", "."]
 current_version_command: ["python3", "setup.py", "--version"]
